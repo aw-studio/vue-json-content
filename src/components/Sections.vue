@@ -1,7 +1,8 @@
 <template>
-    <draggable
-        v-if="sections"
-        v-model="sections"
+    <Draggable
+        v-if="value"
+        v-model="value"
+        v-bind="dragOptions"
         :group="group"
         itemKey="uuid"
         tag="transition-group"
@@ -11,51 +12,109 @@
         }"
         @start="drag = true"
         @end="drag = false"
-        v-bind="dragOptions"
     >
         <template #item="{ element }">
             <div>
                 <component
-                    :is="registeredSections[element.key]"
-                    :element="element"
+                    :is="sections[getSectionKey(element.component)]"
+                    :modelValue="element.value"
+                    @update:modelValue="(e) => updateElement(element, e)"
                 />
             </div>
         </template>
-    </draggable>
+    </Draggable>
 </template>
 <script setup lang="ts">
-import { ref, watch, PropType } from 'vue';
-import draggable from 'vuedraggable';
-import { SectionInterface, registeredSections } from './../index';
+import { ref, watch, PropType, Component, FunctionalComponent } from 'vue';
+import Draggable from 'vuedraggable';
+import { TSection, TModel, DragOptions } from '../index';
+import { v4 as uuid } from 'uuid';
+
+export declare type Sections = {
+    [k: string]: Component | FunctionalComponent;
+}[];
+
+export declare type DraggableSection = {
+    uuid: string;
+    component: any;
+    key?: string;
+    value?: TModel;
+};
 
 const props = defineProps({
     modelValue: {
-        type: Array as PropType<SectionInterface[]>,
+        type: Array as PropType<TSection[]>,
+        required: true,
+    },
+    sections: {
+        type: Object as PropType<Sections>,
         required: true,
     },
     group: {
         type: String,
         default: 'sections',
     },
-    section: {
-        type: Object as PropType<SectionInterface>,
-        default: null,
+    dragOptions: {
+        type: Object as PropType<DragOptions>,
+        default: () => ({
+            animation: 200,
+            ghostClass: 'ghost',
+        }),
     },
 });
+
 const emit = defineEmits(['update:modelValue']);
 
-const drag = ref(false);
-const dragOptions = ref({
-    animation: 200,
-    ghostClass: 'ghost',
-});
-const sections = ref<SectionInterface[]>(props.modelValue);
+const drag = ref<boolean>(false);
+
+const updateElement = (element: any, value: any) => {
+    element.value = value;
+};
+
+const getSectionKey = (section: any): string => {
+    const json = JSON.stringify(section);
+
+    for (let key in props.sections) {
+        if (JSON.stringify(props.sections[key]) == json) {
+            return key;
+        }
+    }
+
+    return '';
+};
+
+const parseValue = (value: TSection[]) => {
+    let b = [];
+
+    for (let i in value) {
+        b.push({
+            uuid: uuid(),
+            key: value[i].type,
+            value: value[i].value,
+            component: props.sections[value[i].type],
+        });
+    }
+
+    return b;
+};
+const transformValue = (value: DraggableSection[]) => {
+    let b: TSection[] = [];
+
+    for (let i in value) {
+        b.push({
+            type: getSectionKey(value[i].component),
+            value: value[i].value || {},
+        });
+    }
+
+    return b;
+};
+
+const value = ref<DraggableSection[]>(parseValue(props.modelValue));
 
 watch(
-    () => sections,
-    (state, prevState) => {
-        emit('update:modelValue', sections.value);
-    },
+    () => value,
+    () => emit('update:modelValue', transformValue(value.value)),
     { deep: true }
 );
 </script>
