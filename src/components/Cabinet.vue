@@ -1,5 +1,5 @@
 <template>
-    <draggable
+    <Draggable
         v-model="drawers"
         :group="{
             name: group,
@@ -14,26 +14,27 @@
                 <component :is="element" />
             </div>
         </template>
-    </draggable>
+    </Draggable>
 </template>
 <script setup lang="ts">
 import { useSlots, onMounted, ref } from 'vue';
-import draggable from 'vuedraggable';
-import { cloneSection } from '../index';
+import Draggable from 'vuedraggable';
+import { v4 as uuid } from 'uuid';
 
-defineProps({
+const props = defineProps({
     group: {
         type: String,
         default: 'sections',
-    },
-    actions: {
-        type: Boolean,
-        default: false,
     },
 });
 
 const slots = useSlots();
 const drawers = ref();
+
+export const cloneSection: any = (el: any) => ({
+    uuid: uuid(),
+    component: el.props.draws,
+});
 
 onMounted(() => {
     if (slots.default) {
