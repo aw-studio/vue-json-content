@@ -31,7 +31,7 @@ const props = defineProps({
 const slots = useSlots();
 const drawers = ref();
 
-export const cloneSection: any = (el: any) => ({
+const cloneSection: any = (el: any) => ({
     uuid: uuid(),
     component: el.props.draws,
 });

@@ -18,23 +18,30 @@
                 <component
                     :is="sections[getSectionKey(element.component)]"
                     :modelValue="element.value"
-                    @update:modelValue="(e) => updateElement(element, e)"
+                    @update:modelValue="e => updateElement(element, e)"
                 />
             </div>
         </template>
     </Draggable>
 </template>
 <script setup lang="ts">
-import { ref, watch, PropType, Component, FunctionalComponent } from 'vue';
+import {
+    ref,
+    watch,
+    PropType,
+    Component as VueComponent,
+    FunctionalComponent,
+    computed,
+} from 'vue';
 import Draggable from 'vuedraggable';
 import { TSection, TModel, DragOptions } from '../index';
 import { v4 as uuid } from 'uuid';
 
-export declare type Sections = {
-    [k: string]: Component | FunctionalComponent;
+declare type Sections = {
+    [k: string]: VueComponent | FunctionalComponent;
 }[];
 
-export declare type DraggableSection = {
+declare type DraggableSection = {
     uuid: string;
     component: any;
     key?: string;
