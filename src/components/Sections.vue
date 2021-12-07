@@ -16,7 +16,7 @@
         <template #item="{ element }">
             <div>
                 <component
-                    :is="sections[getSectionKey(element.component)]"
+                    :is="sections[getSectionKey(element.component) as any]"
                     :modelValue="element.value"
                     @update:modelValue="e => updateElement(element, e)"
                 />
