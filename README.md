@@ -4,65 +4,62 @@ This package lets you build content by dragging and dropping pre-defined section
 
 ## Usage
 
-```js
+```vue
+// App.vue
 <template>
+    <!-- You can drag drawers from your cabinet... -->
     <Cabinet>
-        <Drawer :as="TextSection">
-            Text Section
-        </Drawer>
+        <div :draws="TextSection">Text Section</div>
     </Cabinet>
 
-    <Sections v-model="sections" />
+    <div class="p-4 bg-blue-200">
+        <!-- ... to your sections -->
+        <Sections v-model="form.sections" :sections="sections" />
+    </div>
+    <pre>{{ form }}</pre>
 </template>
-<script setup lang="ts">
-import { ref } from 'vue';
-import {
-    Sections,
-    Cabinet,
-    Drawer,
-    registerSections,
-} from '@aw-studio/vue-json-content';
-import TextSection from './your/components/TextSection.vue';
 
-const sections = ref()
+<script setup lang="ts">
+import { Head, useForm } from '@inertiajs/inertia-vue3';
+import { Sections, Cabinet } from '@aw-studio/vue-json-content';
+import TextSection from '@/Sections/TextSection.vue';
+
+const form = useForm({
+    sections: [],
+});
+
+const sections: any = {
+    text: TextSection,
+};
 </script>
 ```
 
-You set up a `Cabinet` packed with `Drawers` you can drag and drop to your `Sections`.
-A `Drawer` will be converted as the `Section` you set up yourself, holding any attributes you like. These attributes can be edited and will be synced with the `v-model` you pass to the `Sections`. The outputted JSON can be stored in your Database and will be rendered in the same order und structure when loaded.
-
-```js
+```vue
+// TextSection.vue
 <template>
     <div>
-        <input type="text" v-model="element.attributes.foo" />
-        <input type="text" v-model="element.attributes.bar" />
+        <input type="text" v-model="model.text" />
     </div>
 </template>
-<script setup lang="ts">
-import {
-    defineSection,
-} from '@aw-studio/vue-json-content';
 
-defineProps({
-    as: {
+<script setup lang="ts">
+import { ref, watch, defineEmits } from 'vue';
+const props = defineProps({
+    modelValue: {
         type: Object,
         required: true,
-    },
-    element: {
-        type: Object,
-        required: true,
-    },
-    section: {
-        type: Object,
-        default: () =>
-            defineSection({
-                key: 'TextSection',
-                attributes: {
-                    foo: null,
-                    bar: 'Default value'
-                },
-            }),
+        default: () => ({
+            text: null,
+        }),
     },
 });
+
+const model = ref(props.modelValue);
+const emit = defineEmits(['update:modelValue']);
+watch(
+    () => model.value,
+    value => emit('update:modelValue', value),
+    { deep: true }
+);
 </script>
 ```

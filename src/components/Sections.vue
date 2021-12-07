@@ -31,7 +31,6 @@ import {
     PropType,
     Component as VueComponent,
     FunctionalComponent,
-    computed,
 } from 'vue';
 import Draggable from 'vuedraggable';
 import { TSection, TModel, DragOptions } from '../index';
