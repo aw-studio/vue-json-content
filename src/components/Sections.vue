@@ -97,7 +97,7 @@ const parseValue = (value: TSection[]) => {
             uuid: uuid(),
             key: value[i].type,
             value: value[i].value,
-            component: props.sections[value[i].type],
+            component: props.sections[value[i].type as any],
         });
     }
 
