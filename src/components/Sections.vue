@@ -18,7 +18,7 @@
                 <component
                     :is="sections[getSectionKey(element.component) as any]"
                     :modelValue="element.value"
-                    @update:modelValue="e => updateElement(element, e)"
+                    @update:modelValue="(e: any) => updateElement(element, e)"
                 />
             </div>
         </template>
