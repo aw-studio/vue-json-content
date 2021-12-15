@@ -1,6 +1,6 @@
 {
     "name": "@aw-studio/vue-json-content",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "source": "src/index.js",
     "main": "index.js",
     "module": "dist/vue-json-content.esm-bundler.js",
