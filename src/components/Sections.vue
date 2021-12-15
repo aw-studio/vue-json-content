@@ -33,7 +33,7 @@ import {
     FunctionalComponent,
 } from 'vue';
 import Draggable from 'vuedraggable';
-import { TSection, TModel, DragOptions } from '../index';
+import { TSection, TModel, DragOptions } from './../';
 import { v4 as uuid } from 'uuid';
 
 declare type Sections = {
